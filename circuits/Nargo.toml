@@ -1,0 +1,7 @@
+[package]
+name = "zk_battleship_circuit"
+type = "bin"
+authors = ["ZK Battleship Team"]
+compiler_version = ">=0.36.0"
+
+[dependencies]
