@@ -40,7 +40,7 @@ export default function Navbar({ walletAddress, onConnect, onDisconnect, gameSta
                         to="/game"
                         className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
                     >
-                        Game
+                        Games
                     </NavLink>
                 </div>
 

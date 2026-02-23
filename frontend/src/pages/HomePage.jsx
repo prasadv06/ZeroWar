@@ -26,7 +26,7 @@ export default function HomePage({ walletAddress }) {
                     </p>
                     <div className="hero-actions">
                         <button className="btn btn-primary btn-lg" onClick={() => navigate('/game')}>
-                            Play Now
+                            Explore Games
                         </button>
                         <a
                             href="https://stellar.expert/explorer/testnet/contract/CDECQBR3TD7FVZ7UOOGR5JXAUILQNUHULFXHJEYBCLYBYHLP2BUTYYCY"
@@ -152,16 +152,6 @@ export default function HomePage({ walletAddress }) {
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="cta-section">
-                <div className="cta-card">
-                    <h2>Ready to Play?</h2>
-                    <p>Experience provably fair ZeroWar on the blockchain.</p>
-                    <button className="btn btn-primary btn-lg" onClick={() => navigate('/game')}>
-                        Launch Game
-                    </button>
-                </div>
-            </section>
         </div>
     );
 }
