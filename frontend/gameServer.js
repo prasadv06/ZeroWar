@@ -153,6 +153,29 @@ wss.on('connection', (ws) => {
                 }
                 break;
             }
+
+            case 'tcg_action': {
+                const idx = getPlayerIndex(ws);
+                if (idx === -1) break;
+                const targetIdx = 1 - idx;
+                if (players[targetIdx]) {
+                    console.log(`[Server] Player ${idx + 1} sent TCG action: ${msg.action}`);
+                    send(players[targetIdx].ws, { type: 'tcg_action', action: msg.action, payload: msg.payload });
+                }
+                break;
+            }
+
+            case 'pass_turn': {
+                const idx = getPlayerIndex(ws);
+                if (idx === -1) break;
+                if (idx !== currentTurn) break; // only active player can pass turn
+
+                console.log(`[Server] Player ${idx + 1} passed their turn.`);
+                currentTurn = 1 - currentTurn;
+                send(players[0].ws, { type: 'turn_update', yourTurn: currentTurn === 0 });
+                send(players[1].ws, { type: 'turn_update', yourTurn: currentTurn === 1 });
+                break;
+            }
         }
     });
 

@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import GameHubPage from './pages/GameHubPage';
 import GamePage from './pages/GamePage';
+import ZkTcgPage from './pages/ZkTcgPage';
 import './App.css';
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
                         <Route path="/" element={<HomePage walletAddress={walletAddress} />} />
                         <Route path="/game" element={<GameHubPage />} />
                         <Route path="/zkbattleship" element={<GamePage walletAddress={walletAddress} isRealWallet={isRealWallet} setGameStatus={setGameStatus} />} />
+                        <Route path="/zktcg" element={<ZkTcgPage walletAddress={walletAddress} isRealWallet={isRealWallet} setGameStatus={setGameStatus} />} />
                     </Routes>
                 </main>
             </div>

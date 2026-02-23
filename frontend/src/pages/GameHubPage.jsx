@@ -24,15 +24,15 @@ export default function GameHubPage() {
                     </div>
 
                     {/* ZK TCG Arena Card */}
-                    <div className="game-card disabled-card">
+                    <div className="game-card">
                         <div className="game-card-content">
                             <h3>🃏 ZK TCG Arena</h3>
                             <p>
-                                A privacy-preserving Trading Card Game. Keep your hand hidden and
-                                cryptographically prove your moves without revealing your deck.
+                                A privacy-preserving Trading Card Game. Keep your deck hidden and
+                                cryptographically prove your moves using Zero Knowledge proofs.
                             </p>
-                            <button className="btn btn-secondary mt-4" disabled>
-                                Coming Soon
+                            <button className="btn btn-primary mt-4" onClick={() => navigate('/zktcg')}>
+                                Play ZK TCG Arena
                             </button>
                         </div>
                     </div>

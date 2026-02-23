@@ -15,6 +15,7 @@ const EXPLORER_BASE = 'https://stellar.expert/explorer/testnet';
 // Contract addresses
 const GAME_HUB_CONTRACT = 'CB4VZAT2U3UC6XFK3N23SKRF2NDCMP3QHJYMCHHFMZO7MRQO6DQ2EMYG';
 const DEFAULT_CONTRACT = 'CDECQBR3TD7FVZ7UOOGR5JXAUILQNUHULFXHJEYBCLYBYHLP2BUTYYCY';
+const TCG_CONTRACT = 'CASMLEQ5SIN74UTQ4ECBF4A2SPQR4V6HKKDDUQVEJMFTUOXGNQKORK4H';
 
 let BATTLESHIP_CONTRACT = DEFAULT_CONTRACT;
 
@@ -28,6 +29,30 @@ export function getContractAddress() {
 
 function getServer() {
     return new StellarSdk.SorobanRpc.Server(SOROBAN_RPC_URL);
+}
+
+/**
+ * Build a contract call transaction for ZK TCG
+ */
+async function buildTcgContractCall(publicKey, functionName, args = []) {
+    const server = getServer();
+    const account = await server.getAccount(publicKey);
+    const contract = new StellarSdk.Contract(TCG_CONTRACT);
+
+    const tx = new StellarSdk.TransactionBuilder(account, {
+        fee: '10000000',
+        networkPassphrase: NETWORK_PASSPHRASE,
+    })
+        .addOperation(contract.call(functionName, ...args))
+        .setTimeout(60)
+        .build();
+
+    const simulated = await server.simulateTransaction(tx);
+    if (StellarSdk.SorobanRpc.Api.isSimulationError(simulated)) {
+        throw new Error(`Simulation failed: ${JSON.stringify(simulated.error)}`);
+    }
+
+    return StellarSdk.SorobanRpc.assembleTransaction(tx, simulated).build();
 }
 
 /**
@@ -224,3 +249,74 @@ export function getTxUrl(hash) {
 }
 
 export { NETWORK_PASSPHRASE, DEFAULT_CONTRACT };
+
+// ==========================================
+// ZK TCG ARENA FUNCTIONS
+// ==========================================
+
+export async function tcgInitGame(publicKey, player2Address) {
+    return await buildTcgContractCall(publicKey, 'init_game', [
+        new StellarSdk.Address(publicKey).toScVal(),
+        new StellarSdk.Address(player2Address).toScVal(),
+    ]);
+}
+
+export async function tcgCommitDeck(publicKey, hashHex) {
+    const hashBytes = new Uint8Array(
+        hashHex.replace(/^0x/, '').match(/.{1,2}/g).map(b => parseInt(b, 16))
+    );
+    return await buildTcgContractCall(publicKey, 'commit_deck', [
+        new StellarSdk.Address(publicKey).toScVal(),
+        StellarSdk.xdr.ScVal.scvBytes(hashBytes),
+    ]);
+}
+
+export async function tcgDrawCard(publicKey, cardValue, proofBytesHex = "0x00") {
+    // We send empty/dummy bytes since we bypassed proof serialization for the hackathon MVP
+    const pBytes = new Uint8Array(
+        proofBytesHex.replace(/^0x/, '').padEnd(2, '0').match(/.{1,2}/g)?.map(b => parseInt(b, 16)) || [0]
+    );
+    return await buildTcgContractCall(publicKey, 'draw_card', [
+        new StellarSdk.Address(publicKey).toScVal(),
+        StellarSdk.nativeToScVal(cardValue, { type: 'u32' }),
+        StellarSdk.xdr.ScVal.scvBytes(pBytes)
+    ]);
+}
+
+export async function tcgPlayCreature(publicKey, attack, health) {
+    return await buildTcgContractCall(publicKey, 'play_creature', [
+        new StellarSdk.Address(publicKey).toScVal(),
+        StellarSdk.nativeToScVal(attack, { type: 'u32' }),
+        StellarSdk.nativeToScVal(health, { type: 'u32' })
+    ]);
+}
+
+export async function tcgPlayFireball(publicKey, targetPubKey) {
+    return await buildTcgContractCall(publicKey, 'play_fireball', [
+        new StellarSdk.Address(publicKey).toScVal(),
+        new StellarSdk.Address(targetPubKey).toScVal()
+    ]);
+}
+
+export async function tcgAttack(publicKey, attackerId, targetAddress) {
+    return await buildTcgContractCall(publicKey, 'attack', [
+        new StellarSdk.Address(publicKey).toScVal(),
+        StellarSdk.nativeToScVal(attackerId, { type: 'u32' }),
+        new StellarSdk.Address(targetAddress).toScVal()
+    ]);
+}
+
+export async function tcgAttackCreature(publicKey, attackerId, targetAddress, targetCreatureId) {
+    return await buildTcgContractCall(publicKey, 'attack_creature', [
+        new StellarSdk.Address(publicKey).toScVal(),
+        StellarSdk.nativeToScVal(attackerId, { type: 'u32' }),
+        new StellarSdk.Address(targetAddress).toScVal(),
+        StellarSdk.nativeToScVal(targetCreatureId, { type: 'u32' })
+    ]);
+}
+
+export async function tcgEndGame(publicKey, winnerPubKey) {
+    return await buildTcgContractCall(publicKey, 'end_game', [
+        new StellarSdk.Address(winnerPubKey).toScVal()
+    ]);
+}

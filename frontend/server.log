@@ -1,0 +1,25 @@
+🎮 ZeroWar Game Server running on ws://localhost:3001
+[Server] New connection
+[Server] New connection
+[Server] Player 1 joined: GADZXNHQYFUEUYJ7UANJS5FYXXUHHWUVSKSBO7BT6XBU3Q4Y7H55T5K3
+[Server] New connection
+[Server] New connection
+[Server] Player 2 joined: GCJ5XMIOL2G6G7D2BDTKHPH742IY36KN4BHXZLQQZWOZLFMEKSPQWGK7
+[Server] Both players connected
+[Server] Player 1 committed board
+[Server] Player 2 committed board
+[Server] Battle started! Player 1 goes first
+[Server] Player 1 sent TCG action: play_creature
+[Server] Player 1 sent TCG action: play_creature
+[Server] Player 1 responds: MISS at cell 0
+[Server] Player 2 sent TCG action: play_creature
+[Server] Player 2 responds: MISS at cell 0
+[Server] Player 1 sent TCG action: attack_creature
+[Server] Player 1 responds: MISS at cell 0
+[Server] Player 2 sent TCG action: play_creature
+[Server] Player 2 sent TCG action: attack_creature
+[Server] Player 2 responds: MISS at cell 0
+[Server] Player 1 sent TCG action: attack_creature
+[Server] Player 1 responds: MISS at cell 0
+[Server] Player 2 disconnected
+[Server] Game reset

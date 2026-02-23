@@ -12,7 +12,11 @@
 
 ## 🎯 Project Overview
 
-ZeroWar solves the fundamental trust problem in online Battleship: **how do you know your opponent isn't cheating?**
+ZeroWar is a multi-game hub demonstrating advanced Zero-Knowledge proofs on Stellar Testnet:
+1. **ZK Battleship**: A 2-player P2P Battleship game using Groth16 proofs.
+2. **ZK TCG Arena**: A Trading Card Game using Poseidon2 deck commitments and ZK card draws.
+
+ZeroWar solves the fundamental trust problem in online P2P games: **how do you know your opponent isn't cheating?**
 
 Traditional online Battleship requires a trusted server to hold both boards. With ZK proofs, each player commits a cryptographic hash of their board onchain, and every shot claim (hit or miss) is accompanied by a proof that can be verified without revealing the board. The game runs on the **Stellar Testnet** with real wallet transactions via **Freighter**.
 
