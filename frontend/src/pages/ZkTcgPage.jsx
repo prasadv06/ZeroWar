@@ -589,25 +589,49 @@ export default function ZkTcgPage({ walletAddress, isRealWallet, setGameStatus }
                             {/* ROW 1: Opponent Battlefield */}
                             <div style={{ padding: '1rem', minHeight: '120px', background: 'rgba(255,0,0,0.05)', borderBottom: '1px solid var(--border-light)' }}>
                                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                                    {opponentBoard.map((c, i) => (
-                                        <div key={i} className="card-ui"
-                                            style={{
-                                                border: '1px solid red',
-                                                padding: '1rem',
-                                                borderRadius: '8px',
-                                                background: 'rgba(0,0,0,0.6)',
-                                                cursor: (selectedAttackerIdx !== null || pendingFireballIndex !== null) ? 'crosshair' : 'default',
-                                                boxShadow: (selectedAttackerIdx !== null || pendingFireballIndex !== null) ? '0 0 10px red' : 'none'
-                                            }}
-                                            onClick={() => {
-                                                if (selectedAttackerIdx !== null) executeAttackCreature(i);
-                                                if (pendingFireballIndex !== null) resolveFireballCreature(i);
-                                            }}>
-                                            <div style={{ fontWeight: 'bold', color: 'red' }}>{c.name}</div>
-                                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{c.attack} ATK / {c.health} HP</div>
-                                            {(selectedAttackerIdx !== null || pendingFireballIndex !== null) && <div className="fade-in" style={{ fontSize: '0.7rem', color: 'red', marginTop: '0.5rem', fontWeight: 'bold' }}>CLICK TO TARGET</div>}
-                                        </div>
-                                    ))}
+                                    {opponentBoard.map((c, i) => {
+                                        const lowName = c.name.toLowerCase();
+                                        let bgImage = 'none';
+                                        if (lowName.includes('soldier')) bgImage = `url('/assets/cards/soldier.jpg')`;
+                                        else if (lowName.includes('knight')) bgImage = `url('/assets/cards/knight.jpg')`;
+                                        else if (lowName.includes('giant')) bgImage = `url('/assets/cards/giant.jpg')`;
+                                        else if (lowName.includes('fireball')) bgImage = `url('/assets/cards/fireball.jpg')`;
+
+                                        return (
+                                            <div key={i} className="card-ui"
+                                                style={{
+                                                    width: '160px',
+                                                    height: '240px',
+                                                    flexShrink: 0,
+                                                    boxSizing: 'border-box',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'space-between',
+                                                    border: '1px solid red',
+                                                    padding: '1rem',
+                                                    borderRadius: '8px',
+                                                    backgroundImage: bgImage,
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                    backgroundColor: 'rgba(0,0,0,0.6)',
+                                                    backgroundBlendMode: 'overlay',
+                                                    cursor: (selectedAttackerIdx !== null || pendingFireballIndex !== null) ? 'crosshair' : 'default',
+                                                    boxShadow: (selectedAttackerIdx !== null || pendingFireballIndex !== null) ? '0 0 10px red' : 'none',
+                                                    position: 'relative'
+                                                }}
+                                                onClick={() => {
+                                                    if (selectedAttackerIdx !== null) executeAttackCreature(i);
+                                                    if (pendingFireballIndex !== null) resolveFireballCreature(i);
+                                                }}>
+                                                <div style={{ fontWeight: 'bold', color: 'red', fontSize: '1.2rem', textShadow: '1px 1px 3px black', position: 'relative', zIndex: 2 }}>{c.name}</div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#fff', marginTop: 'auto', marginBottom: '1rem', position: 'relative', zIndex: 2 }}>
+                                                    <div style={{ background: 'rgba(211, 47, 47, 0.8)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', textShadow: '1px 1px 1px black' }} title="Attack">{c.attack}</div>
+                                                    <div style={{ background: 'rgba(56, 142, 60, 0.8)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', textShadow: '1px 1px 1px black' }} title="Health">{c.health}</div>
+                                                </div>
+                                                {(selectedAttackerIdx !== null || pendingFireballIndex !== null) && <div className="fade-in" style={{ fontSize: '0.7rem', color: 'red', marginTop: '0.5rem', fontWeight: 'bold', textShadow: '1px 1px 2px black' }}>CLICK TO TARGET</div>}
+                                            </div>
+                                        )
+                                    })}
                                     {opponentBoard.length === 0 && <span style={{ color: 'var(--text-muted)' }}>Opponent battlefield is empty.</span>}
                                 </div>
                             </div>
@@ -638,25 +662,54 @@ export default function ZkTcgPage({ walletAddress, isRealWallet, setGameStatus }
                                         const isReady = card.canAttack && !card.hasAttacked && turnPhase === 'attack' && socket.isMyTurn;
                                         const statusColor = isReady ? '#0f0' : (card.hasAttacked ? '#888' : '#aaa');
 
+                                        const lowName = card.name.toLowerCase();
+                                        let bgImage = 'none';
+                                        if (lowName.includes('soldier')) bgImage = `url('/assets/cards/soldier.jpg')`;
+                                        else if (lowName.includes('knight')) bgImage = `url('/assets/cards/knight.jpg')`;
+                                        else if (lowName.includes('giant')) bgImage = `url('/assets/cards/giant.jpg')`;
+                                        else if (lowName.includes('fireball')) bgImage = `url('/assets/cards/fireball.jpg')`;
+
                                         return (
                                             <div key={card.uniqueId || i} className="card-ui"
                                                 style={{
+                                                    width: '160px',
+                                                    height: '240px',
+                                                    flexShrink: 0,
+                                                    boxSizing: 'border-box',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'space-between',
                                                     border: selectedAttackerIdx === i ? '2px solid yellow' : `1px solid ${isReady ? 'var(--accent-cyan)' : 'var(--border-light)'}`,
                                                     padding: '1rem',
                                                     borderRadius: '8px',
                                                     cursor: isReady ? 'pointer' : 'not-allowed',
-                                                    background: 'rgba(0,0,0,0.8)',
-                                                    opacity: card.hasAttacked ? 0.6 : 1
+                                                    backgroundImage: bgImage,
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                                    backgroundBlendMode: 'overlay',
+                                                    opacity: card.hasAttacked ? 0.6 : 1,
+                                                    filter: !card.canAttack ? 'grayscale(30%)' : 'none',
+                                                    position: 'relative',
+                                                    overflow: 'hidden'
                                                 }}
                                                 onClick={() => { if (isReady) initiateAttack(i); }}>
-                                                <div style={{ fontWeight: 'bold', color: isReady ? 'var(--accent-cyan)' : statusColor }}>{card.name}</div>
-                                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{card.attack} ATK / {card.health} HP</div>
+                                                <div style={{ fontWeight: 'bold', color: isReady ? 'white' : statusColor, fontSize: '1.2rem', textShadow: `1px 1px 3px ${isReady ? 'var(--accent-cyan)' : 'black'}`, position: 'relative', zIndex: 2 }}>{card.name}</div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#fff', marginTop: 'auto', marginBottom: '1rem', position: 'relative', zIndex: 2 }}>
+                                                    <div style={{ background: 'rgba(211, 47, 47, 0.8)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', textShadow: '1px 1px 1px black' }} title="Attack">{card.attack}</div>
+                                                    <div style={{ background: 'rgba(56, 142, 60, 0.8)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', textShadow: '1px 1px 1px black' }} title="Health">{card.health}</div>
+                                                </div>
 
                                                 {selectedAttackerIdx === i ? (
-                                                    <div style={{ fontSize: '0.7rem', color: 'yellow', marginTop: '0.5rem', fontWeight: 'bold' }}>TARGETING...</div>
+                                                    <div style={{ fontSize: '0.7rem', color: 'yellow', marginTop: '0.5rem', fontWeight: 'bold', textShadow: '1px 1px 2px black', position: 'relative', zIndex: 2 }}>TARGETING...</div>
                                                 ) : (
-                                                    <div style={{ fontSize: '0.7rem', color: statusColor, marginTop: '0.5rem' }}>
+                                                    <div style={{ fontSize: '0.7rem', color: statusColor, marginTop: '0.5rem', textShadow: '1px 1px 2px black', position: 'relative', zIndex: 2 }}>
                                                         {!card.canAttack ? '💤 Zzz (Summoning Sickness)' : (card.hasAttacked ? '✓ Attacked' : (isReady ? '⚔️ Ready to Attack' : 'Waiting...'))}
+                                                    </div>
+                                                )}
+                                                {!card.canAttack && (
+                                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '2rem', opacity: 0.8, textShadow: '2px 2px 4px rgba(0,0,0,0.8)', zIndex: 3 }}>
+                                                        💤
                                                     </div>
                                                 )}
                                             </div>
@@ -699,19 +752,55 @@ export default function ZkTcgPage({ walletAddress, isRealWallet, setGameStatus }
                                 <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem' }}>
                                     {hand.map((card, i) => {
                                         const canPlay = socket.isMyTurn && turnPhase === 'play' && !hasPlayedCardThisTurn;
+
+                                        const lowName = card.name.toLowerCase();
+                                        let bgImage = 'none';
+                                        if (lowName.includes('soldier')) bgImage = `url('/assets/cards/soldier.jpg')`;
+                                        else if (lowName.includes('knight')) bgImage = `url('/assets/cards/knight.jpg')`;
+                                        else if (lowName.includes('giant')) bgImage = `url('/assets/cards/giant.jpg')`;
+                                        else if (lowName.includes('fireball')) bgImage = `url('/assets/cards/fireball.jpg')`;
+
                                         return (
-                                            <div key={card.uniqueId || i} className="card-ui" style={{ minWidth: '120px', border: '1px solid var(--border-light)', padding: '1rem', borderRadius: '8px', background: 'var(--bg-dark)', opacity: canPlay ? 1 : 0.6 }}>
-                                                <div style={{ fontWeight: 'bold' }}>{card.name}</div>
-                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                                                    {card.isSpell ? `${card.damage} DMG` : `${card.attack} ATK / ${card.health} HP`}
-                                                </div>
+                                            <div key={card.uniqueId || i} className="card-ui" style={{
+                                                width: '160px',
+                                                height: '240px',
+                                                flexShrink: 0,
+                                                boxSizing: 'border-box',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'space-between',
+                                                border: '1px solid var(--border-light)',
+                                                padding: '1rem',
+                                                borderRadius: '8px',
+                                                backgroundImage: bgImage,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                backgroundBlendMode: 'overlay',
+                                                opacity: canPlay ? 1 : 0.6,
+                                                position: 'relative'
+                                            }}>
+                                                <div style={{ fontWeight: 'bold', color: 'white', fontSize: '1.2rem', textShadow: '1px 1px 3px black', position: 'relative', zIndex: 2 }}>{card.name}</div>
+
+                                                {!card.isSpell && (
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#fff', marginTop: 'auto', marginBottom: '1rem', position: 'relative', zIndex: 2 }}>
+                                                        <div style={{ background: 'rgba(211, 47, 47, 0.8)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', textShadow: '1px 1px 1px black' }} title="Attack">{card.attack}</div>
+                                                        <div style={{ background: 'rgba(56, 142, 60, 0.8)', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold', textShadow: '1px 1px 1px black' }} title="Health">{card.health}</div>
+                                                    </div>
+                                                )}
+
+                                                {card.isSpell && (
+                                                    <div style={{ fontSize: '0.9rem', color: '#ff8a65', marginTop: 'auto', marginBottom: '1rem', textShadow: '1px 1px 2px black', fontWeight: 'bold', position: 'relative', zIndex: 2 }}>
+                                                        Deal {card.damage} damage
+                                                    </div>
+                                                )}
 
                                                 {card.isSpell ? (
-                                                    <button className="btn btn-primary" style={{ padding: '0.4rem', fontSize: '0.8rem', width: '100%' }} onClick={() => initiateFireball(i)} disabled={!canPlay}>
-                                                        Cast
+                                                    <button className="btn btn-primary" style={{ padding: '0.4rem', fontSize: '0.9rem', width: '100%', position: 'relative', zIndex: 2 }} onClick={() => initiateFireball(i)} disabled={!canPlay}>
+                                                        Cast Spell
                                                     </button>
                                                 ) : (
-                                                    <button className="btn btn-primary" style={{ padding: '0.4rem', fontSize: '0.8rem', width: '100%' }} onClick={() => handlePlayCreature(card, i)} disabled={!canPlay || board.length >= 3}>
+                                                    <button className="btn btn-primary" style={{ padding: '0.4rem', fontSize: '0.9rem', width: '100%', position: 'relative', zIndex: 2 }} onClick={() => handlePlayCreature(card, i)} disabled={!canPlay || board.length >= 3}>
                                                         Summon
                                                     </button>
                                                 )}
@@ -746,7 +835,7 @@ export default function ZkTcgPage({ walletAddress, isRealWallet, setGameStatus }
                     </div>
                 </div>
 
-            </div>
+            </div >
 
             <style>{`
             .pulse {
@@ -771,6 +860,6 @@ export default function ZkTcgPage({ walletAddress, isRealWallet, setGameStatus }
                 transform: translateY(-2px);
             }
             `}</style>
-        </div>
+        </div >
     );
 }

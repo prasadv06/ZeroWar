@@ -22,7 +22,7 @@ Traditional online Battleship requires a trusted server to hold both boards. Wit
 
 ---
 
-## 🕹️ How the Game Works (Step-by-Step)
+## 🕹️ How ZK Battleship Works (Step-by-Step)
 
 ### Game Flow
 
@@ -83,6 +83,57 @@ Traditional online Battleship requires a trusted server to hold both boards. Wit
 - The opponent immediately sees a **"You Lost"** overlay (no manual action needed)
 - If a player disconnects mid-game, the remaining player wins **by forfeit**
 - Players can click **New Game** to start a completely fresh round
+
+---
+
+## 🃏 How ZK TCG Arena Works (Step-by-Step)
+
+### Game Flow
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│                        ZK TCG ARENA GAME FLOW                             │
+├────────────────────────┬───────────────────────────────────────────────────┤
+│     PLAYER 1           │              PLAYER 2                            │
+├────────────────────────┼───────────────────────────────────────────────────┤
+│ 1. Connect Freighter   │  1. Connect Freighter                            │
+│ 2. Enter opponent addr │  2. Enter opponent addr                          │
+│ 3. Init Game On-Chain ────▶ Soroban: start_tcg_game(p1, p2)               │
+│ 4. Commit Deck Hash ───────▶ Soroban: commit_tcg_deck(Poseidon2(deck))    │
+│                        │  5. Commit Deck Hash ──▶ Same                    │
+│ 6. Draw Phase ─────────────▶ Generate ZK proof for private draw           │
+│ 7. Play Phase          │  ◀──── Relay drawn card commitment               │
+│ 8. Attack Phase ───────────▶ WebSocket ────▶ Combat resolution            │
+│                        │  7. Take Turn (Draw, Play, Attack)               │
+│ 9. Opponent HP = 0 ───────▶ Victory!                                      │
+└────────────────────────┴───────────────────────────────────────────────────┘
+```
+
+### Phase 1 — Setup & Deck Commitment
+- Players connect their **Freighter wallet** and enter their opponent's address.
+- Behind the scenes, the game constructs a 12-card deck and generates a **random salt**.
+- The player generates a **Poseidon2 hash** of their deck + salt and securely commits it on-chain to the Soroban contract. 
+- This ensures the deck is locked before the game starts and prevents deck stacking/manipulation.
+
+### Phase 2 — Draw Phase (ZK Verified)
+- At the start of their turn, a player draws a card.
+- A **ZK Proof** is generated locally to prove to the contract that the drawn card index correctly corresponds to the original committed deck hash without revealing the card to the opponent.
+- The player's Hand strictly remains private in their local browser.
+
+### Phase 3 — Play Phase
+- Players examine their private hand.
+- They can summon **Creature Cards** (e.g., Soldier, Knight, Giant) onto their side of the 3-slot battlefield.
+- They can cast **Spell Cards** (e.g., Fireball) targeting the opponent directly.
+- Newly summoned creatures experience "Summoning Sickness" and must wait until the next turn to attack.
+
+### Phase 4 — Attack Phase & Combat
+- Once creatures are readied, players can target the **Opponent Player (Direct Damage)** or an **Opponent's Creature** on the board.
+- Direct attacks lower the opponent's overall HP (Starts at 15 HP).
+- Creature combat compares Attack vs Health stats.
+- All actions are synced instantly via the WebSocket game server to maintain real-time pacing.
+
+### Phase 5 — Game Over
+- The first player to reduce their opponent's HP to 0 is victorious.
 
 ---
 
@@ -390,15 +441,26 @@ npm run dev
 # Output: http://localhost:5173
 ```
 
-### 4. Play in 2-Player Mode
+### 4. Play ZK Battleship
 
 1. Open **Browser Profile 1** → `http://localhost:5173/`
 2. Open **Browser Profile 2** → `http://localhost:5173/`
-3. Each player connects their **Freighter wallet** (must be on **Testnet**)
-4. Player 1: Enter Player 2's address → **Start Game** (signs TX in Freighter)
-5. Player 2: Enter Player 1's address → **Start Game** (joins existing game)
-6. Both players: Place 5 ships → **Commit Board Hash** (signs TX in Freighter)
-7. Battle begins! Player 1 fires first, turns alternate
+3. Click **Play ZeroWar** from the Home Page.
+4. Each player connects their **Freighter wallet** (must be on **Testnet**)
+5. Player 1: Enter Player 2's address → **Start Game** (signs TX in Freighter)
+6. Player 2: Enter Player 1's address → **Start Game** (joins existing game)
+7. Both players: Place 5 ships → **Commit Board Hash** (signs TX in Freighter)
+8. Battle begins! Player 1 fires first, turns alternate
+
+### 5. Play ZK TCG Arena
+
+1. Open **Browser Profile 1** → `http://localhost:5173/`
+2. Open **Browser Profile 2** → `http://localhost:5173/`
+3. Click **Play ZK TCG** from the Home Page.
+4. Connect **Freighter wallet** in both profiles.
+5. Enter opponent addresses and click **Initialize Game On-Chain**.
+6. Both players click **Commit Hash** to lock their 12-card decks.
+7. Once entering the Play Phase, take turns drawing, summoning creatures, and casting spells to reduce the opponent's HP to 0!
 
 ---
 
