@@ -4,7 +4,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 
-const WS_URL = 'ws://localhost:3001';
+const WS_URL = 'wss://zerowar-server.onrender.com';
 
 export default function useTcgSocket(walletAddress, onTcgAction, onGameOver, onLog) {
     const wsRef = useRef(null);
